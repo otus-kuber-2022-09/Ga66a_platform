@@ -38,10 +38,15 @@ spec:
           mountPropagation: HostToContainer
           name: root
           readOnly: true          
+      tolerations:
+      - key: "node-role.kubernetes.io/control-plane"
+        operator: "Exists"
+        effect: "NoSchedule"
       volumes:
       - hostPath:
           path: /sys
         name: sys
       - hostPath:
           path: /
-        name: root          
+        name: root
+        
