@@ -1,3 +1,4 @@
 .idea
-*/kind.exe
-*/kubectl.exe
+*/kind*
+*/kubectl*
+*/run.sh
