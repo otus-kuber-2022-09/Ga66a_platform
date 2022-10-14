@@ -17,10 +17,6 @@ spec:
       containers:
       - name: minio
         env:
-#        - name: MINIO_ACCESS_KEY
-#          value: "minio"
-#        - name: MINIO_SECRET_KEY
-#          value: "minio123"
         - name: MINIO_ACCESS_KEY
           valueFrom:
             secretKeyRef:
