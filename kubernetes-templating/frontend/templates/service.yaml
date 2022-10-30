@@ -5,10 +5,11 @@ metadata:
   labels:
     app: frontend
 spec:
-  type: NodePort
+  type: {{ .Values.service.type }}
   selector:
     app: frontend
   ports:
   - name: http
-    port: 80
-    targetPort: 8080
+    port: {{ default 80 .Values.service.port }}
+    targetPort: {{ default 8080 .Values.service.targetPort }}
+    nodePort: {{ default 30010 .Values.service.NodePort }}
