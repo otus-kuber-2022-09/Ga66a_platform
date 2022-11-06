@@ -1,0 +1,6 @@
+image: elastic/kibana
+ingress:
+  enabled: true
+  path: /
+  hosts:
+  - kibana.yc.ga66a.ru

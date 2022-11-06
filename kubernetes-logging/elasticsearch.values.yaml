@@ -1,0 +1,4 @@
+image: elastic/elasticsearch
+
+replicas: 1
+minimumMasterNodes: 1
