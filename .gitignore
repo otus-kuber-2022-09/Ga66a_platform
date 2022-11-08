@@ -1,5 +1,5 @@
 .idea
-*/kind*
+*/kind.exe
 */kubectl*
-*/run.sh
+#*/run.sh
 */test.sh
