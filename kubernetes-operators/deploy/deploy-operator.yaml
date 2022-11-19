@@ -16,5 +16,6 @@ spec:
       containers:
         - name: operator
           #image: wenger23/mysql-operator:1.1
-          image: "ga66a/mysql-operator"
+          #image: "ga66a/mysql-operator"
+          image: "docker-proxy.cloud.ga66a.ru/ga66a/mysql-operator"
           imagePullPolicy: "Always"
