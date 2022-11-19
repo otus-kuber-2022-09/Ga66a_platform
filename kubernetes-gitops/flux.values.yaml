@@ -1,13 +1,8 @@
 git:
-  email: "gabba@ga66a.ru"
-  url: git@github.com:otus-kuber-2022-09/Ga66a_platform
-  branch: kubernetes-gitops
-  path: "kubernetes-gitops/flux-mf"
-  readonly: true
-helmOperator:
-  create: true
-  createCRD: true
+  url: git@gitlab.com:PLyubaev/microservices-demo.git
+  path: deploy
+  branch: main
+  ciSkip: true
+  pollInterval: 1m
 registry:
-  pollInterval: "120s"
-syncGarbageCollection:
-  enabled: true
+  automationInterval: 1m
