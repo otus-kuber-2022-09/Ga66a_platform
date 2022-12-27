@@ -72,3 +72,5 @@ kubectl exec -it vault-0 -- vault operator init --key-shares=1 --key-threshold=1
 
 # kubectl exec -it vault-0 -- vault write pki_int/roles/example-dot-ru allowed_domains="example.ru" allow_subdomains=true max_ttl="720h"
 # kubectl exec -it vault-0 -- vault write pki_int/issue/example-dot-ru common_name="test.example.ru" ttl="24h"
+
+https://github.com/otus-kuber-2022-09/Ga66a_platform/pull/11
