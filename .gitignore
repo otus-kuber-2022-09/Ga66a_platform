@@ -3,3 +3,9 @@
 */kubectl*
 #*/run.sh
 */test.sh
+/kubernetes-create-upgrade-cluster/cloud-terraform/.terraform/
+/kubernetes-create-upgrade-cluster/cloud-terraform/.terraform.lock.hcl
+/kubernetes-create-upgrade-cluster/cloud-terraform/terraform.tfstate
+/kubernetes-create-upgrade-cluster/cloud-terraform/terraform.tfstate.backup
+/kubernetes-create-upgrade-cluster/id_rsa
+/kubernetes-create-upgrade-cluster/id_rsa.pub

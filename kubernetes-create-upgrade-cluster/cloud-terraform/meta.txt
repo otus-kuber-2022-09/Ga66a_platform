@@ -1,0 +1,8 @@
+#cloud-config
+users:
+  - name: k8s
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDKwdDvX8N6hThmW2UDlMtqt5VRrf731v/qfID51XEfys5j0gczYS8seDdp0VQY5uAFsyzMJINR+gxaNIr0aJSTI4iR1PUAxOO3CiBzbNWB6yeu5i9Dro5ElYeSY2KbGqY89k1NvATfMzFWuXA4YDyplJRKM/vVHCXVwfNDDVAsO9LvupR/XYbbw9mXs42sEv6YC9rD8lGJRg+t71WQwpnDT2CKQVm8cv7wJygQ4sMweReOlsEDMqbrF5wm6hvXzQCxdl3rv5ly7JxW6eZGZW5Y+p7oxUnKDTr2hNhH7a4RDs8y3SZ+HOXyHfJ6v89IGaNEPSMayiZRX5eSdoTzZwTcAj6LlpMe1obO2CXxXAWLQth+0eUwd8wbAwQyI2kik51TvHkAS3TqWAq2Tezlgx6GjPdhfBgCcwgtaUkXrm5z+GrQtIIswOiSL52YgJQujaWKS2oF1aow5J1cl7PQxjR7lFUGkPTpNqzmSPZ1A1DPtJF8r8DjtzDKOOjsdvnaBWc=
