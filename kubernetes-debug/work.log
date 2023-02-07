@@ -17,7 +17,23 @@ kubectl apply -f https://raw.githubusercontent.com/otus-kuber-2022-09/Ga66a_plat
 #Nginx test pod
 kubectl apply -f https://raw.githubusercontent.com/otus-kuber-2022-09/Ga66a_platform/kubernetes-debug/kubernetes-debug/nginx_pod.yaml
 
-kubectl debug nginx --image=busybox -it --share-processes --copy-to=nginx-debug
+kubectl debug nginx --image=nicolaka/netshoot -it --share-processes --copy-to=nginx-debug
+#Процесс в поде виден
+nginx-debug  ~  ps aux
+PID   USER     TIME  COMMAND
+    1 65535     0:00 /pause
+    7 root      0:00 nginx: master process nginx -g daemon off;
+   38 101       0:00 nginx: worker process
+   39 101       0:00 nginx: worker process
+   40 101       0:00 nginx: worker process
+   41 101       0:00 nginx: worker process
+   42 101       0:00 nginx: worker process
+   43 101       0:00 nginx: worker process
+   44 root      0:00 zsh
+  106 root      0:00 ps aux
+#Strace выполняется
+
+
 
 strace -t -e trace=open,close,read,getdents,write,connect,accept -p 7
 strace -p 7  -s 10000 -v -f

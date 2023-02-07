@@ -7,9 +7,9 @@ spec:
   - name: nginx
     image: nginx
     imagePullPolicy: IfNotPresent
-    securityContext:
-      capabilities:
-        add:
-        - SYS_PTRACE
-    stdin: true
-    tty: true
+#    securityContext:
+#      capabilities:
+#        add:
+#        - SYS_PTRACE
+#    stdin: true
+#    tty: true
