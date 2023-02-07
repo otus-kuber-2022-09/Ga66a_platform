@@ -11,7 +11,8 @@ curl -LJO https://github.com/aylei/kubectl-debug/releases/download/v0.1.1/kubect
 tar -xzf kubectl-debug_0.1.1_linux_amd64.tar.gz && \
 cp kubectl-debug /usr/bin
 
+#Debug agent
+kubectl apply -f https://raw.githubusercontent.com/otus-kuber-2022-09/Ga66a_platform/kubernetes-debug/kubernetes-debug/agent_daemonset.yml
 
-curl https://raw.githubusercontent.com/aylei/kubectl-debug/dd7e4965e4ae5c4f53e6cf9fd17acc964274ca5c/scripts/agent_daemonset.yml -o agent_daemonset.yml && \
-kubectl apply -f agent_daemonset.yml
+#Nginx test pod
 
