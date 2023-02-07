@@ -15,4 +15,10 @@ cp kubectl-debug /usr/bin
 kubectl apply -f https://raw.githubusercontent.com/otus-kuber-2022-09/Ga66a_platform/kubernetes-debug/kubernetes-debug/agent_daemonset.yml
 
 #Nginx test pod
+kubectl apply -f https://raw.githubusercontent.com/otus-kuber-2022-09/Ga66a_platform/kubernetes-debug/kubernetes-debug/nginx_pod.yaml
 
+kubectl debug nginx --image=busybox -it --share-processes --copy-to=nginx-debug
+
+strace -t -e trace=open,close,read,getdents,write,connect,accept -p 7
+strace -p 7  -s 10000 -v -f
+strace -e trace=network nc -v -n 127.0.0.1 80
