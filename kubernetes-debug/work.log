@@ -1,0 +1,17 @@
+#install kubectl-debug
+apt update && \
+apt install git -y && \
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" && \
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
+brew install gcc && \
+brew install aylei/tap/kubectl-debug
+
+cd /root && \
+curl -LJO https://github.com/aylei/kubectl-debug/releases/download/v0.1.1/kubectl-debug_0.1.1_linux_amd64.tar.gz && \
+tar -xzf kubectl-debug_0.1.1_linux_amd64.tar.gz && \
+cp kubectl-debug /usr/bin
+
+
+curl https://raw.githubusercontent.com/aylei/kubectl-debug/dd7e4965e4ae5c4f53e6cf9fd17acc964274ca5c/scripts/agent_daemonset.yml -o agent_daemonset.yml && \
+kubectl apply -f agent_daemonset.yml
+
