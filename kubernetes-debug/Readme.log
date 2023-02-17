@@ -1,0 +1,98 @@
+#install kubectl-debug
+apt update && \
+apt install git -y && \
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" && \
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
+brew install gcc && \
+brew install aylei/tap/kubectl-debug
+
+cd /root && \
+curl -LJO https://github.com/aylei/kubectl-debug/releases/download/v0.1.1/kubectl-debug_0.1.1_linux_amd64.tar.gz && \
+tar -xzf kubectl-debug_0.1.1_linux_amd64.tar.gz && \
+cp kubectl-debug /usr/bin
+
+#Debug agent
+kubectl apply -f https://raw.githubusercontent.com/otus-kuber-2022-09/Ga66a_platform/kubernetes-debug/kubernetes-debug/agent_daemonset.yml
+
+#Nginx test pod
+kubectl apply -f https://raw.githubusercontent.com/otus-kuber-2022-09/Ga66a_platform/kubernetes-debug/kubernetes-debug/nginx_pod.yaml
+
+kubectl debug nginx --image=nicolaka/netshoot -it --share-processes --copy-to=nginx-debug
+#Процесс в поде виден
+nginx-debug  ~  ps aux
+PID   USER     TIME  COMMAND
+    1 65535     0:00 /pause
+    7 root      0:00 nginx: master process nginx -g daemon off;
+   38 101       0:00 nginx: worker process
+   39 101       0:00 nginx: worker process
+   40 101       0:00 nginx: worker process
+   41 101       0:00 nginx: worker process
+   42 101       0:00 nginx: worker process
+   43 101       0:00 nginx: worker process
+   44 root      0:00 zsh
+  106 root      0:00 ps aux
+
+#Strace выполняется
+ nginx-debug  ~  strace -c -p7 -f
+strace: Process 7 attached
+
+
+#KIT
+Правим конфиг kind-а
+
+networking:
+  disableDefaultCNI: true # disable kindnet
+  podSubnet: 192.168.0.0/16 # set to Calico's default subnet
+
+Стартуем кластер. Установка Calico в том-же скрипте.
+
+./run.sh
+
+#Netperf-operator
+
+kubectl apply -f ./kit/crd.yaml && \
+kubectl apply -f ./kit/rbac.yaml && \
+kubectl apply -f ./kit/operator.yaml
+
+kubectl apply -f ./kit/cr.yaml
+
+kubectl describe netperf.app.example.com/example
+Status:
+  Client Pod:          netperf-client-59c9c5e4a713
+  Server Pod:          netperf-server-59c9c5e4a713
+  Speed Bits Per Sec:  13030.04
+  Status:              Done
+
+kubectl apply -f ./kit/network-policy.yaml
+kubectl delete -f ./kit/cr.yaml && kubectl apply -f ./kit/cr.yaml
+Status:
+  Client Pod:          netperf-client-3e98e7457df1
+  Server Pod:          netperf-server-3e98e7457df1
+  Speed Bits Per Sec:  0
+  Status:              Started test
+
+!!!Не юзать KIND. Там iptables не пишет логи никуда, никак. ВООБЩЕ никак!!! Пол дня потрачено.
+
+Видим не нулевые дропы
+root@kind-worker:/# iptables --list -nv | grep DROP
+ 28  1680 DROP       all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* cali:WKVqB35XaZPqfEbP */
+
+root@kind-worker:/# iptables --list -nv | grep LOG
+    0     0 LOG        all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* cali:vrs_owudT6KAlVZw */ LOG flags 0 level 5 prefix "calico-packet: "
+   28  1680 LOG        all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* cali:bp4DvZ9xMclEirMM */ LOG flags 0 level 5 prefix "calico-packet: "
+
+journalctl -k | grep calico-packet
+Feb 17 16:03:21 worker1-k8s-tst.ekb.sigma-it.ru kernel: calico-packet: IN=calib4ebeef7c02 OUT=calif5cf084f750 MAC=ee:ee:ee:ee:ee:ee:fa:b5:73:7b:27:4c:08:00 SRC=10.33.112.31 DST=10.33.112.55 LEN=60 TOS=0x00 PREC=0x00 TTL=63 ID=1043 DF PROTO=TCP SPT=52389 DPT=12865 WINDOW=28800 RES=0x00 SYN URGP=0
+Feb 17 16:03:22 worker1-k8s-tst.ekb.sigma-it.ru kernel: calico-packet: IN=calib4ebeef7c02 OUT=calif5cf084f750 MAC=ee:ee:ee:ee:ee:ee:fa:b5:73:7b:27:4c:08:00 SRC=10.33.112.31 DST=10.33.112.55 LEN=60 TOS=0x00 PREC=0x00 TTL=63 ID=1044 DF PROTO=TCP SPT=52389 DPT=12865 WINDOW=28800 RES=0x00 SYN URGP=0
+
+### iptables-tailer
+kubectl apply -f ./kit/kit-serviceaccount.yaml && \
+kubectl apply -f ./kit/kit-clusterrole.yaml && \
+kubectl apply -f ./kit/kit-clusterrolebinding.yaml && \
+kubectl apply -f ./kit/iptables-tailer.yaml
+
+В логах контейнера kube-iptables-tailer появились строки
+E0217 11:22:23.480868       1 poster.go:71] Error retrying packet drop handling, backing off: packetDrop={LogTime:2023-02-17T11:21:42.726082+00:00 HostName:XXXXXXXXXX.ru SrcIP:10.33.112.57 DstIP:10.33.112.59}, retryIn=selfLink was empty, can't make reference secs, error=27.310871606
+E0217 11:22:50.792045       1 poster.go:71] Error retrying packet drop handling, backing off: packetDrop={LogTime:2023-02-17T11:21:42.726082+00:00 HostName:XXXXXXXXXX.ru SrcIP:10.33.112.57 DstIP:10.33.112.59}, retryIn=selfLink was empty, can't make reference secs, error=43.153252215
+E0217 11:23:33.945608       1 poster.go:71] Error retrying packet drop handling, backing off: packetDrop={LogTime:2023-02-17T11:21:42.726082+00:00 HostName:XXXXXXXXXX.ru SrcIP:10.33.112.57 DstIP:10.33.112.59}, retryIn=selfLink was empty, can't make reference secs, error=47.058453209
+E0217 11:24:21.004368       1 poster.go:71] Error retrying packet drop handling, backing off: packetDrop={LogTime:2023-02-17T11:21:42.726082+00:00 HostName:XXXXXXXXXX.ru SrcIP:10.33.112.57 DstIP:10.33.112.59}, retryIn=selfLink was empty, can't make reference secs, error=52.999688587
